@@ -6,6 +6,8 @@
 #define SSID F("Covex67")
 #define PASSWORD F("135742694")
 #define PIN D8
+#define BUTTON_DELAY 400
+#define BLINK_INTERVAL 200
  
 ESP8266WebServer server(80);
  
@@ -22,7 +24,7 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     digitalWrite(LED_BUILTIN, blink);
     blink ^= 1;
-    delay(100);
+    delay(BLINK_INTERVAL);
   }
   digitalWrite(LED_BUILTIN, 1);
  
@@ -35,7 +37,19 @@ void setup() {
     server.send(200, F("text/plain"), buffer);
     
     digitalWrite(PIN, 1);
-    delay(400);
+    delay(BUTTON_DELAY);
+    digitalWrite(PIN, 0);
+  });
+
+  server.on(F("/on"), []() {
+    server.send(200, F("text/plain"), F("ok"));
+    
+    digitalWrite(PIN, 1);
+  });
+
+  server.on(F("/off"), []() {
+    server.send(200, F("text/plain"), F("ok"));
+    
     digitalWrite(PIN, 0);
   });
  
